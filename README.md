@@ -6,3 +6,7 @@ Por medio del siguiente enlace podrá acceder al modelado: [Aquí](https://lucid
 
 # Paso inicial
 Ejecutar queries.sql
+
+# Datos de acceso 
+    usuario: kevin
+    contras: $2y$10$KKbknGWTy6oTceP14trHv.H7aukItA0KYEzO7iEbvw88OERyCYz8e
