@@ -7,7 +7,7 @@ $pdo = connectBD();
 function crearUsuario($username, $password)
 {
     $username = cleanInput($username);
-    $password = encryptPass($password);
+    $password = cleanInput($password);
 
     try {
         $pdo = connectBD();
@@ -39,7 +39,8 @@ function validarCredenciales($username, $password)
 {
     global $pdo;
     $username = cleanInput($username);
-    $password = encryptPass($password);
+    $password = cleanInput($password);
+    //$password = encryptPass($password);
 
     $sql = "SELECT COUNT(*) AS count FROM Users WHERE username = :username AND password = :password";
 
@@ -72,8 +73,8 @@ if (isset($_POST['accion'])) {
             break;
         case 'login':
             if (isset($_POST['username']) && isset($_POST['password'])) {
-                echo "true";
-                //validarCredenciales($_POST['username'], $_POST['password']);
+                //echo "true";
+                validarCredenciales($_POST['username'], $_POST['password']);
             }else{
                 echo "false";
             }
