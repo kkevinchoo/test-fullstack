@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>Usuarios | TECHNOKEY</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">TECHNOKEY</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Vuelos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="types.html">Tipos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#"
+                >Usuarios</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <h1>Usuarios</h1>
+      <form id="formCrear" class="mb-3">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="username">Nombre de usuario:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="password">Contraseña:</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <button type="submit" class="btn btn-primary">Crear</button>
+          </div>
+        </div>
+      </form>
+      <table id="tablaUsuarios" class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre de usuario</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        if (localStorage.getItem('user')) {
+          obtenerUsuarios();
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+
+      function obtenerUsuarios() {
+        $.ajax({
+          url: "api/users.php",
+          type: "POST",
+          data: { accion: "obtener" },
+          dataType: "json",
+          success: function (response) {
+            var tbody = $("#tablaUsuarios tbody");
+            tbody.empty();
+
+            $.each(response, function (index, record) {
+              var row = $("<tr>");
+              row.append($("<td>").text(record.id));
+              row.append($("<td>").text(record.username));
+              tbody.append(row);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al obtener los usuarios: " + error);
+          },
+        });
+      }
+
+      $("#formCrear").submit(function (e) {
+        e.preventDefault();
+
+        var username = $("#username").val();
+        var password = $("#password").val();
+
+        $.ajax({
+          url: "api/users.php",
+          type: "POST",
+          data: { accion: "crear", username: username, password: password },
+          success: function (response) {
+            obtenerUsuarios();
+            $("#formCrear")[0].reset();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al crear el usuario: " + error);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

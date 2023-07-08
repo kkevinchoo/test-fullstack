@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Iniciar sesión</title>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <h2 class="text-center mb-4">Iniciar sesión</h2>
+          <div class="card">
+            <div class="card-body">
+              <form id="formLogin" method="post">
+                <div class="mb-3">
+                  <label for="usuario" class="form-label">Usuario</label>
+                  <input type="text" class="form-control" id="usuario"
+                    name="usuario" required>
+                </div>
+                <div class="mb-3">
+                  <label for="contrasena" class="form-label">Contraseña</label>
+                  <input type="password" class="form-control" id="contrasena"
+                    name="contrasena" required>
+                </div>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+      if (localStorage.getItem('user')) {
+        window.location.href = 'flights.html';
+      }
+    });
+
+    $('#formLogin').submit(function(e) {
+      e.preventDefault();
+
+      var username = $('#usuario').val();
+      var password = $('#contrasena').val();
+
+      $.ajax({
+        url: 'api/users.php',
+        type: 'POST',
+        data: { accion: "login", username: username, password: password },
+        success: function(response) {
+          if (response=="true") {
+            window.location.href = 'flights.html';
+            localStorage.setItem("user",1);
+          }else{
+            alert("error en la credenciales")
+          }
+        },
+        error: function(xhr, status, error) {
+          console.log('Error al crear el registro: ' + error);
+        }
+      });
+    });
+  </script>
+  </body>
+</html>

@@ -21,7 +21,7 @@ CREATE TABLE Flights (
   date_flight DATE,
   time_start TIME,
   time_end TIME,
-  duration INTERVAL,
+  duration INTEGER,
   cost FLOAT,
   id_type INTEGER REFERENCES Types(id),
   id_user INTEGER REFERENCES Users(id)

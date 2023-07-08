@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>Vuelos | TECHNOKEY</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">TECHNOKEY</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Vuelos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="types.html">Tipos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="users.html">Usuarios</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-4">
+      <h1>
+        Vuelos
+        <button class="btn btn-primary" onclick="$('#formCrear').toggle()">
+          Crear
+        </button>
+      </h1>
+      <form id="formCrear" class="mb-3" style="display: none">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="date">Fecha:</label>
+              <input
+                type="date"
+                class="form-control"
+                id="date"
+                name="date"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="time_start">Hora de salida:</label>
+              <input
+                type="time"
+                class="form-control"
+                id="time_start"
+                name="time_start"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="time_end">Hora de llegada:</label>
+              <input
+                type="time"
+                class="form-control"
+                id="time_end"
+                name="time_end"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="duration">Duración:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="duration"
+                name="duration"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="cost">Costo:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="cost"
+                name="cost"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="id_type">Tipo de vuelo:</label>
+              <select class="form-control" id="id_type" name="id_type" required>
+                <!-- Opciones de tipos de vuelo -->
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary">Crear</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="row mb-3 mt-4">
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="filtroFecha">Fecha:</label>
+            <input type="date" class="form-control" id="filtroFecha" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="filtroHora">Hora salida:</label>
+            <input type="time" class="form-control" id="filtroHora" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="filtroTipo">Tipo:</label>
+            <select class="form-control" id="filtroTipo"></select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="filtroCosto">Costo:</label>
+            <input type="number" class="form-control" id="filtroCosto" />
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <button class="btn btn-primary" onclick="filtrarVuelos()">
+            Filtrar
+          </button>
+        </div>
+      </div>
+      <div class="mt-4">
+        <table id="tablaVuelos" class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Hora de salida</th>
+              <th>Hora de llegada</th>
+              <th>Duración</th>
+              <th>Costo</th>
+              <th>Tipo</th>
+              <th>Usuario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="editModal"
+      tabindex="-1"
+      aria-labelledby="editModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Editar vuelo</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="formEditar" class="mb-3">
+            <div class="modal-body">
+              <div class="row">
+                <input type="hidden" value="0" id="edit_id">
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label for="date">Fecha:</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="edit_date"
+                      name="date"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label for="time_start">Hora de salida:</label>
+                    <input
+                      type="time"
+                      class="form-control"
+                      id="edit_time_start"
+                      name="time_start"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label for="time_end">Hora de llegada:</label>
+                    <input
+                      type="time"
+                      class="form-control"
+                      id="edit_time_end"
+                      name="time_end"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label for="duration">Duración:</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="edit_duration"
+                      name="duration"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label for="cost">Costo:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="edit_cost"
+                      name="cost"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label for="id_type">Tipo de vuelo:</label>
+                    <select
+                      class="form-control"
+                      id="edit_id_type"
+                      name="id_type"
+                      required
+                    ></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="submit" id="edit_submit" class="btn btn-primary">Editar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+
+    <script>
+      $(document).ready(function () {
+        if (localStorage.getItem('user')) {
+            obtenerTiposVuelo();
+            obtenerVuelos();   
+        } else {
+        window.location.href = 'index.html';
+        }
+      });
+
+      var editModal = new bootstrap.Modal(document.getElementById("editModal"), {
+        keyboard: false,
+      });
+      var tablaVuelos = $("#tablaVuelos").DataTable({
+        language: {
+          url: "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json",
+        },
+        paging: true,
+        lengthMenu: [5, 10, 25, 50],
+        ordering: true,
+        info: true,
+      });
+
+      function obtenerTiposVuelo() {
+        $.ajax({
+          url: "api/types.php",
+          type: "POST",
+          data: { accion: "obtener" },
+          dataType: "json",
+          success: function (response) {
+            let select = $("#id_type");
+            let filtroTipo = $("#filtroTipo");
+            let edit_id_type = $("#edit_id_type");
+            select.empty();
+            filtroTipo.empty();
+            edit_id_type.empty();
+
+            $.each(response, function (index, record) {
+              select.append(
+                $("<option>").attr("value", record.id).text(record.name)
+              );
+              filtroTipo.append(
+                $("<option>").attr("value", record.id).text(record.name)
+              );
+              edit_id_type.append(
+                $("<option>").attr("value", record.id).text(record.name)
+              );
+            });
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al obtener los tipos de vuelo: " + error);
+          },
+        });
+      }
+
+      function obtenerVuelos() {
+        $.ajax({
+          url: "api/flights.php",
+          type: "POST",
+          data: { accion: "obtener" },
+          dataType: "json",
+          success: function (response) {
+            tablaVuelos.clear();
+            $.each(response, function (index, record) {
+              tablaVuelos.row.add([
+                record.id,
+                record.date_flight,
+                record.time_start,
+                record.time_end,
+                record.duration,
+                record.cost,
+                record.name,
+                record.username,
+                `
+                <button class="btn btn-primary btn-sm mr-2" onclick="editarVuelo(${record.id},false)">Ver</button>
+                <button class="btn btn-primary btn-sm mr-2" onclick="editarVuelo(${record.id},true)">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="eliminarVuelo(${record.id})">Eliminar</button>
+              `,
+              ]);
+            });
+
+            tablaVuelos.draw();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al obtener los vuelos: " + error);
+          },
+        });
+      }
+
+      $("#formCrear").submit(function (e) {
+        e.preventDefault();
+
+        let date = $("#date").val();
+        let time_start = $("#time_start").val();
+        let time_end = $("#time_end").val();
+        let duration = $("#duration").val();
+        let cost = $("#cost").val();
+        let id_type = $("#id_type").val();
+        let id_user = 1;
+        //let id_user = localStorage.getItem("user");
+
+        $.ajax({
+          url: "api/flights.php",
+          type: "POST",
+          data: {
+            accion: "crear",
+            date: date,
+            time_start: time_start,
+            time_end: time_end,
+            duration: duration,
+            cost: cost,
+            id_type: id_type,
+            id_user: id_user,
+          },
+          success: function (response) {
+            obtenerVuelos();
+            alert("Se creó.");
+            $('#formCrear').toggle();
+            $("#formCrear")[0].reset();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al crear el vuelo: " + error);
+          },
+        });
+      });
+
+      function eliminarVuelo(id) {
+        if (confirm("¿Estás seguro de eliminar este vuelo?")) {
+          $.ajax({
+            url: "api/flights.php",
+            type: "POST",
+            data: { accion: "eliminar", id: id },
+            success: function (response) {
+              obtenerVuelos();
+            },
+            error: function (xhr, status, error) {
+              console.log("Error al eliminar el vuelo: " + error);
+            },
+          });
+        }
+      }
+
+      function filtrarVuelos() {
+        let fecha = $("#filtroFecha").val();
+        let hora = $("#filtroHora").val();
+        let tipo = $("#filtroTipo").val();
+        let costo = $("#filtroCosto").val();
+
+        $.ajax({
+          url: "api/flights.php",
+          type: "POST",
+          data: {
+            accion: "filtrar",
+            fecha: fecha,
+            hora: hora,
+            tipo: tipo,
+            costo: costo,
+          },
+          dataType: "json",
+          success: function (response) {
+            tablaVuelos.clear();
+
+            $.each(response, function (index, record) {
+              tablaVuelos.row.add([
+                record.id,
+                record.date_flight,
+                record.time_start,
+                record.time_end,
+                record.duration,
+                record.cost,
+                record.type_name,
+                record.username,
+                `
+                <button class="btn btn-primary btn-sm mr-2" onclick="editarVuelo(${record.id},false)">Ver</button>
+                <button class="btn btn-primary btn-sm mr-2" onclick="editarVuelo(${record.id},true)">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="eliminarVuelo(${record.id})">Eliminar</button>
+                `,
+              ]);
+            });
+
+            tablaVuelos.draw();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al filtrar los vuelos: " + error);
+          },
+        });
+      }
+
+      function editarVuelo(idVuelo,is_edit) {
+        $.ajax({
+          url: "api/flights.php",
+          type: "POST",
+          data: {
+            accion: "obtenerVuelo",
+            id: idVuelo,
+          },
+          dataType: "json",
+          success: function (response) {
+            $("#edit_date").val(response.date_flight);
+            $("#edit_time_start").val(response.time_start);
+            $("#edit_time_end").val(response.time_end);
+            $("#edit_duration").val(response.duration);
+            $("#edit_cost").val(response.cost);
+            $("#edit_id_type").val(response.id_type);
+            $("#edit_id").val(idVuelo)
+
+            if(is_edit){
+                $("#edit_date").removeAttr('disabled');
+                $("#edit_time_start").removeAttr('disabled');
+                $("#edit_time_end").removeAttr('disabled');
+                $("#edit_duration").removeAttr('disabled');
+                $("#edit_cost").removeAttr('disabled');
+                $("#edit_id_type").removeAttr('disabled');
+                $("#edit_id").removeAttr('disabled');
+                $("#edit_submit").show()
+            }else{
+                $("#edit_date").attr('disabled', 'disabled');
+                $("#edit_time_start").attr('disabled', 'disabled');
+                $("#edit_time_end").attr('disabled', 'disabled');
+                $("#edit_duration").attr('disabled', 'disabled');
+                $("#edit_cost").attr('disabled', 'disabled');
+                $("#edit_id_type").attr('disabled', 'disabled');
+                $("#edit_id").attr('disabled', 'disabled');
+                $("#edit_submit").hide()
+            }
+
+
+            editModal.show();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al obtener el vuelo: " + error);
+          },
+        });
+      }
+
+      $("#formEditar").submit(function (e) {
+        e.preventDefault();
+
+        let date = $("#edit_date").val();
+        let time_start = $("#edit_time_start").val();
+        let time_end = $("#edit_time_end").val();
+        let duration = $("#edit_duration").val();
+        let cost = $("#edit_cost").val();
+        let id_type = $("#edit_id_type").val();
+        let id = $("#edit_id").val();
+        let id_user = 1;
+        //let id_user = localStorage.getItem("user");
+
+        $.ajax({
+          url: "api/flights.php",
+          type: "POST",
+          data: {
+            accion: "actualizar",
+            date: date,
+            time_start: time_start,
+            time_end: time_end,
+            duration: duration,
+            cost: cost,
+            id_type: id_type,
+            id: id,
+            id_user: id_user,
+          },
+          success: function (response) {
+            obtenerVuelos();
+            editModal.hide();
+            $("#formEditar")[0].reset();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error al crear el vuelo: " + error);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
