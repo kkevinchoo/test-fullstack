@@ -26,3 +26,6 @@ CREATE TABLE Flights (
   id_type INTEGER REFERENCES Types(id),
   id_user INTEGER REFERENCES Users(id)
 );
+
+-- Insertar usuario inicial
+INSERT INTO Users (username, password) VALUES ('kevin', '$2y$10$KKbknGWTy6oTceP14trHv.H7aukItA0KYEzO7iEbvw88OERyCYz8e');
